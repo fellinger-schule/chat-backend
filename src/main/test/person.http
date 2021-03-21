@@ -1,0 +1,12 @@
+POST http://localhost:8069/User/register
+Content-Type: application/json
+
+{
+  "name": "Heinz",
+  "username": "the_heinz",
+  "passwordHash": "aaa"
+}
+
+###
+
+GET http://localhost:8069/User/info/the_heinz
