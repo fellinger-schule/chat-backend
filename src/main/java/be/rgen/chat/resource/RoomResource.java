@@ -108,4 +108,21 @@ public class RoomResource {
         return result;
     }
 
+    @GET
+    @Transactional
+    @Path("addUser/{username}/toRoom/{roomId}")
+    public Response.Status addUser(
+            @Context SecurityContext ctx,
+            @PathParam("username") String username,
+            @PathParam("roomId") String roomId
+    ) {
+        Response.Status response = Response.Status.BAD_REQUEST;
+        User user = User.findByUsername(username);
+        Room room = Room.findById(Long.parseLong(roomId));
+        if(user != null && room != null) {
+            response = user.joinRoom(room) ? Response.Status.OK : Response.Status.BAD_REQUEST;
+        }
+        return response;
+    }
+
 }

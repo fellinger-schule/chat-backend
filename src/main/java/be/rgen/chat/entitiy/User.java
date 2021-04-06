@@ -40,7 +40,11 @@ public class User extends PanacheEntity {
                 '}';
     }
 
-    public boolean joinRoom(Room room) { return rooms.add(room); }
+    public boolean joinRoom(Room room) {
+        Boolean result = rooms.add(room);
+        this.persist();
+        return result;
+    }
 
     public static User findByUsername(String username) {
        return Assembler.toUser(new UserLoginDTO(username, ""));
