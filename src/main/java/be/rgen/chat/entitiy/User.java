@@ -1,9 +1,12 @@
 package be.rgen.chat.entitiy;
 
+import be.rgen.chat.Assembler;
+import be.rgen.chat.dto.UserLoginDTO;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Usr")
@@ -11,6 +14,13 @@ public class User extends PanacheEntity {
     public String name;
     public String username;
     public String passwordHash;
+    @ManyToMany
+    @JoinTable(
+        name = "user_room",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "room_id")
+    )
+    public Set<Room> rooms = new HashSet<Room>();
 
     public User(String name, String username, String passwordHash) {
         this.name = name;
@@ -28,5 +38,11 @@ public class User extends PanacheEntity {
                 ", passwordHash='" + passwordHash + '\'' +
                 ", id=" + id +
                 '}';
+    }
+
+    public boolean joinRoom(Room room) { return rooms.add(room); }
+
+    public static User findByUsername(String username) {
+       return Assembler.toUser(new UserLoginDTO(username, ""));
     }
 }
