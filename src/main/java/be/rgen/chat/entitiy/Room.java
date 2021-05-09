@@ -1,11 +1,13 @@
 package be.rgen.chat.entitiy;
 
 
+import be.rgen.chat.ChatObservable;
 import be.rgen.chat.dto.RoomOverviewDTO;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import org.hibernate.collection.internal.PersistentSet;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,7 +46,7 @@ public class Room extends PanacheEntity {
         return messages
                 .parallelStream()
                 .sorted()
-                .limit(n)
+                .skip(Math.max(messages.size()-n,0))
                 .collect(Collectors.toList());
     }
 
@@ -56,7 +58,9 @@ public class Room extends PanacheEntity {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public boolean addMessage(Message message) {
+        ChatObservable.getInstance().setRoomChanged(this.id);
         return messages.add(message);
     }
 
@@ -68,6 +72,7 @@ public class Room extends PanacheEntity {
         return users.parallelStream().map(user -> (Long)user.id).collect(Collectors.toSet());
     }
 
+    @Transactional
     public RoomOverviewDTO getOverView() {
         RoomOverviewDTO result = null;
         if(messages.size() > 0) {

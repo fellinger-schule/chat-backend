@@ -1,10 +1,12 @@
 package be.rgen.chat.entitiy;
 
 import be.rgen.chat.Assembler;
+import be.rgen.chat.ChatObservable;
 import be.rgen.chat.dto.UserLoginDTO;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,9 +42,11 @@ public class User extends PanacheEntity {
                 '}';
     }
 
+    @Transactional
     public boolean joinRoom(Room room) {
         Boolean result = rooms.add(room);
         this.persist();
+        ChatObservable.getInstance().setRoomAssociationChanged(this.id);
         return result;
     }
 

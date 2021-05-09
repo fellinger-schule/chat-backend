@@ -83,7 +83,7 @@ public class RoomResource {
         List<MessageInfoDTO> result = new ArrayList<>();
         Room room = Room.findById(Long.parseLong(roomId));
         if(room != null) {
-            result = room.getLastNMessages(50)
+            result = room.getLastNMessages(10)
                     .parallelStream()
                     .map(msg -> Assembler.toMessageInfoDTO(msg))
                     .collect(Collectors.toList());
